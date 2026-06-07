@@ -1223,13 +1223,74 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text2); }
 
-  /* RESPONSIVE */
+
+  /* RESPONSIVE MOBILE */
   @media (max-width: 600px) {
-    header { padding: 14px 18px; }
-    main { padding: 24px 18px; }
-    .header-search { width: 150px; }
-    .books-grid { grid-template-columns: 1fr 1fr; }
-    .book-header { flex-direction: column; }
+    /* Header */
+    header {
+      padding: 10px 14px;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    .logo { font-size: 1.2rem; }
+    .header-search { width: 120px; padding: 6px 10px; }
+    .btn.btn-ghost.btn-sm { padding: 5px 8px; font-size: 0.72rem; }
+
+    /* Main */
+    main { padding: 16px 12px; }
+    #home-page, #book-page { padding: 12px 0; }
+    .page-title { font-size: 1.6rem; }
+
+    /* Grid livres */
+    .books-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .book-card { padding: 16px 14px 14px; }
+    .book-title { font-size: 0.88rem; }
+
+    /* Book header */
+    .book-header {
+      flex-direction: column;
+      padding: 18px 16px;
+      gap: 12px;
+    }
+    .book-header > div:last-child { flex-direction: row; margin-left: 0; }
+    .book-info h2 { font-size: 1.3rem; }
+
+    /* Chapitres */
+    .chapter-toggle { padding: 12px 14px; }
+    .chapter-body { padding: 0 14px 16px; }
+    .chapters-header { flex-wrap: wrap; gap: 10px; }
+
+    /* Mots — layout vertical au lieu d'horizontal */
+    .word-item {
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 14px;
+    }
+    .word-term {
+      min-width: unset;
+      font-size: 1rem;
+    }
+    .word-def { font-size: 0.85rem; }
+    .word-actions {
+      opacity: 1;
+      align-self: flex-end;
+      padding-top: 0;
+    }
+    .word-edit, .word-save, .word-delete {
+      opacity: 1;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+    }
+
+    /* Formulaire ajout mot */
+    .add-word-row { flex-wrap: wrap; gap: 8px; }
+    .add-word-row input { width: 100%; }
+
+    /* Modals */
+    .modal { padding: 22px 18px; margin: 12px; }
+
+    /* Breadcrumb */
+    .breadcrumb { font-size: 0.78rem; }
   }
 </style>
 </head>
@@ -1514,7 +1575,6 @@ async function saveSyncConfig() {
     if (ok) { info.innerHTML=`✓ Connecté`; info.style.color='var(--success)'; document.getElementById('btn-pull').style.display='inline-flex'; updateSyncStatus(); toast('Sync activée !'); return; }
     ghGistId=''; localStorage.removeItem('beanbook_gist_id');
   }
-  // Cherche un gist existant
   const gists = await fetch('https://api.github.com/gists?per_page=100',{headers:{Authorization:`token ${ghToken}`}}).then(r=>r.ok?r.json():[]).catch(()=>[]);
   const found = gists.find(g=>g.files&&g.files[GIST_FILENAME]);
   if (found) {
@@ -1523,7 +1583,6 @@ async function saveSyncConfig() {
     info.innerHTML=`✓ Gist existant chargé !`; info.style.color='var(--success)'; document.getElementById('btn-pull').style.display='inline-flex';
     updateSyncStatus(); toast('Données récupérées !'); renderHome(); return;
   }
-  // Crée un nouveau gist
   const clean={books:db.books.map(b=>{const{coverImg,...r}=b;return r;})};
   const res = await fetch('https://api.github.com/gists',{method:'POST',headers:{Authorization:`token ${ghToken}`,'Content-Type':'application/json'},body:JSON.stringify({description:'BeanBook',public:false,files:{[GIST_FILENAME]:{content:JSON.stringify(clean,null,2)}}})}).then(r=>r.ok?r.json():null).catch(()=>null);
   if (res) {
@@ -2170,11 +2229,17 @@ function esc(str=''){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;
   petalCanvas('bg-sakura-canvas', 40, true);
 })();
 
+// ─── SERVICE WORKER (PWA) ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 
 // ─── SERVICE WORKER (PWA) ─────────────────────────────────
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/beanbook/sw.js").catch(() => {});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/beanbook/sw.js').catch(() => {});
   });
 }
 
