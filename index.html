@@ -2171,6 +2171,13 @@ function esc(str=''){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;
 })();
 
 
+// ─── SERVICE WORKER (PWA) ─────────────────────────────────
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/beanbook/sw.js").catch(() => {});
+  });
+}
+
 // ─── INIT ─────────────────────────────────────────────────
 openIDB().then(async () => {
   for (const book of db.books) {
