@@ -1,10 +1,14 @@
-const CACHE_NAME = 'beanbook-v1';
+const CACHE_NAME = 'beanbook-v2';
+
+const ASSETS = [
+  '/beanbook/',
+  '/beanbook/index.html',
+  '/beanbook/manifest.json'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(['/beanbook/index.html', '/beanbook/manifest.json']).catch(() => {});
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS).catch(() => {}))
   );
   self.skipWaiting();
 });
@@ -12,7 +16,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
