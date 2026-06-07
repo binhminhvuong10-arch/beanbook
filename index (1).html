@@ -1,0 +1,2303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 Bean Book</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2eb8b0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bean Book">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root 
+    --bg: #fdf6ec;
+    --bg2: #fff9f2;
+    --bg3: #fef0d8;
+    --border: #e8d5b5;
+    --text: #1e3a4a;
+    --text2: #7a9aaa;
+    --accent: #e8734a;
+    --accent2: #f4a05a;
+    --teal: #2eb8b0;
+    --teal2: #3dd6cd;
+    --sand: #f5c87a;
+    --danger: #d95f4b;
+    --success: #3daf8e;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(30,58,74,0.10);
+    --shadow-hover: 0 8px 32px rgba(30,58,74,0.16);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    background: #0a0a1a;
+  }
+    50%  { opacity: 1;   transform: scale(1.08) rotate(2deg); }
+    100% { opacity: 0.8; transform: scale(0.97) rotate(-1deg); }
+  }
+
+  /* HEADER */
+  header {
+    padding: 18px 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(15,8,30,0.65);
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  header > *:not(.sakura-container) { position: relative; z-index: 1; }
+
+  .sakura-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #sakura-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .logo-bean {
+    color: #ff9f7a;
+    display: inline-block;
+    animation: logoBeanFloat 3s ease-in-out infinite;
+    transform-origin: center bottom;
+    letter-spacing: -0.01em;
+  }
+
+  .logo-book {
+    color: var(--teal);
+    font-style: italic;
+    font-weight: 300;
+    display: inline-block;
+    animation: logoBookFloat 3s ease-in-out infinite 0.2s;
+    background: linear-gradient(90deg, var(--teal), var(--accent), var(--teal));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: logoShine 4s linear infinite, logoBookFloat 3s ease-in-out infinite 0.2s;
+  }
+
+
+
+  @keyframes logoBeanFloat {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-4px) rotate(1deg); }
+  }
+
+  @keyframes logoBookFloat {
+    0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+    50% { transform: translateY(-4px) rotate(-0.5deg); }
+  }
+
+  @keyframes logoShine {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+
+
+  .logo:hover .logo-bean {
+    animation: logoBounce 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  .logo:hover .logo-book {
+    animation: logoShine 0.8s linear infinite, logoBounce 0.5s cubic-bezier(.36,.07,.19,.97) 0.07s both;
+  }
+
+  @keyframes logoBounce {
+    0%, 100% { transform: translateY(0); }
+    20% { transform: translateY(-8px) scale(1.08); }
+    40% { transform: translateY(-4px) scale(1.04); }
+    60% { transform: translateY(-7px) scale(1.06); }
+    80% { transform: translateY(-2px) scale(1.02); }
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text2);
+    flex: 1;
+  }
+
+  .breadcrumb span { cursor: pointer; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--border); }
+
+  .header-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 16px;
+    width: 220px;
+    transition: border-color 0.2s;
+  }
+
+  .header-search:focus-within { border-color: var(--teal); }
+
+  .header-search input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  .header-search input::placeholder { color: var(--text2); }
+
+  /* MAIN */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 44px 36px;
+  }
+
+  #home-page, #book-page {
+    background: transparent;
+    border-radius: 20px;
+    padding: 36px;
+  }
+
+  .page-title {
+    color: #fff;
+    text-shadow:
+      0 2px 8px rgba(0,0,0,0.55),
+      0 0 30px rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.7);
+    font-size: 2.6rem;
+  }
+
+  .page-sub {
+    color: rgba(255,255,255,0.92);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5), 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .section-title {
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+
+  .book-title {
+    text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  .chapter-name {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .author-letter-header {
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* PAGE TITLE */
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .page-sub {
+    color: var(--text2);
+    font-size: 0.9rem;
+    margin-bottom: 36px;
+  }
+
+  /* WAVE DECORATION */
+  .wave-deco {
+    height: 6px;
+    background: linear-gradient(90deg, var(--teal), var(--accent), var(--sand), var(--teal));
+    background-size: 200% 100%;
+    border-radius: 3px;
+    margin-bottom: 32px;
+    animation: waveShift 6s linear infinite;
+    width: 80px;
+  }
+
+  @keyframes waveShift { to { background-position: 200% 0; } }
+
+  /* BOOKS GRID */
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 22px;
+  }
+
+  .book-card {
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 22px 22px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+
+  .book-card:hover {
+    border-color: var(--teal);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .book-card:hover::after { transform: scaleX(1); }
+
+  .book-cover {
+    font-size: 2.8rem;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .book-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .book-author {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  .book-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .book-stats span {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  .book-delete {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    padding: 4px 7px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8rem;
+  }
+
+  .book-card:hover .book-delete { opacity: 1; }
+  .book-delete:hover { color: var(--danger); background: rgba(217,95,75,0.1); }
+
+  /* ADD BOOK CARD */
+  .add-book-card {
+    background: transparent;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 26px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text2);
+    min-height: 170px;
+  }
+
+  .add-book-card:hover { border-color: var(--teal); color: var(--teal); background: rgba(46,184,176,0.04); }
+  .add-book-card .plus { font-size: 2rem; }
+
+  /* BOOK PAGE */
+  #book-page { display: none; }
+
+  .book-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    margin-bottom: 36px;
+    padding: 28px 32px;
+    background: rgba(255,252,248,0.88);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-header::before {
+    content: '🌊';
+    position: absolute;
+    right: 24px;
+    bottom: -10px;
+    font-size: 5rem;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .book-big-cover { font-size: 3.8rem; }
+
+  .book-info h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.9rem;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .book-info .author {
+    color: var(--text2);
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  .book-info .stats-row {
+    display: flex;
+    gap: 10px;
+    font-size: 0.8rem;
+  }
+
+  .stat-pill {
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  /* CHAPTERS */
+  .chapters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    color: var(--text2);
+    font-style: italic;
+  }
+
+  .chapter-block {
+    background: rgba(255,252,248,0.88);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .chapter-block:hover { border-color: #d5c5a5; box-shadow: var(--shadow); }
+  .chapter-block.open { border-color: var(--teal); }
+
+  .chapter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: var(--radius);
+  }
+
+  .chapter-toggle:hover { background: var(--bg3); }
+
+  .chapter-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chapter-arrow {
+    color: var(--teal);
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+  }
+
+  .chapter-block.open .chapter-arrow { transform: rotate(90deg); }
+
+  .chapter-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .chapter-word-count {
+    font-size: 0.75rem;
+    color: var(--teal);
+    background: rgba(46,184,176,0.1);
+    border: 1px solid rgba(46,184,176,0.25);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .chapter-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .chapter-body {
+    display: none;
+    padding: 0 22px 22px;
+    border-top: 2px solid var(--border);
+  }
+
+  .chapter-block.open .chapter-body { display: block; }
+
+  /* WORDS */
+  .words-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .word-item {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .word-item:hover { border-color: var(--sand); box-shadow: 0 2px 12px rgba(30,58,74,0.07); }
+
+  .word-term {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--accent);
+    font-size: 1rem;
+    min-width: 130px;
+    padding-top: 1px;
+    font-weight: 600;
+  }
+
+  .word-def-wrap { flex: 1; }
+
+  .word-def {
+    color: var(--text2);
+    font-size: 0.87rem;
+    line-height: 1.6;
+  }
+
+  .word-actions {
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+    padding-top: 2px;
+  }
+
+  .word-edit, .word-save, .word-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: all 0.15s;
+    color: var(--text2);
+  }
+
+  .word-item:hover .word-edit,
+  .word-item:hover .word-save,
+  .word-item:hover .word-delete { opacity: 1; }
+
+  .word-edit:hover { color: var(--teal); background: rgba(46,184,176,0.1); }
+  .word-save:hover { color: var(--success) !important; opacity: 1 !important; background: rgba(61,175,142,0.1); }
+  .word-delete:hover { color: var(--danger); background: rgba(217,95,75,0.1); }
+
+  .def-inline-edit {
+    width: 100%;
+    background: var(--bg2);
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.87rem;
+    resize: vertical;
+    min-height: 60px;
+    outline: none;
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  /* ADD WORD FORM */
+  .add-word-form {
+    margin-top: 16px;
+    background: var(--bg3);
+    border: 2px solid var(--teal);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .add-word-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .add-word-row input {
+    flex: 1;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .add-word-row input:focus { border-color: var(--teal); }
+
+  .def-preview {
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    color: var(--text2);
+    margin-bottom: 12px;
+    min-height: 60px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .def-preview.visible { display: block; }
+
+  .def-edit {
+    width: 100%;
+    background: var(--bg2);
+    border: 2px solid var(--teal);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    resize: vertical;
+    min-height: 70px;
+    margin-bottom: 10px;
+    display: none;
+    line-height: 1.6;
+  }
+
+  .def-edit.visible { display: block; }
+
+  .form-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(46,184,176,0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(46,184,176,0.45);
+  }
+
+  .btn-secondary {
+    background: var(--bg3);
+    color: var(--text);
+    border: 2px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text2);
+    border: 2px solid var(--border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: #c8b89a; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 2px solid rgba(217,95,75,0.4);
+  }
+
+  .btn-danger:hover { background: rgba(217,95,75,0.08); }
+
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    border-radius: 20px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,58,74,0.35);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    width: 90%;
+    max-width: 440px;
+    box-shadow: 0 20px 60px rgba(30,58,74,0.18);
+    animation: fadeUp 0.25s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+    color: var(--text);
+  }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text2);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-group input {
+    width: 100%;
+    background: var(--bg3);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-group input:focus { border-color: var(--teal); }
+
+  .emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .emoji-option {
+    font-size: 1.5rem;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--bg3);
+    border: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .emoji-option:hover { border-color: var(--text2); transform: scale(1.1); }
+  .emoji-option.selected { border-color: var(--teal); background: rgba(46,184,176,0.12); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 28px;
+  }
+
+  /* SEARCH RESULTS */
+  .search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 360px;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-hover);
+    z-index: 300;
+    max-height: 380px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+
+  .search-results.open { display: block; }
+
+  .search-result-item {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .search-result-item:hover { background: var(--bg3); }
+  .search-result-item:last-child { border-bottom: none; }
+
+  .sr-word { color: var(--accent); font-style: italic; font-size: 0.9rem; font-family: 'Fraunces', serif; font-weight: 600; }
+  .sr-context { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+
+  .search-wrapper { position: relative; }
+
+  /* LOADING */
+  .loading {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+
+  .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 22px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    box-shadow: var(--shadow-hover);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--teal); color: var(--teal); }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 2px solid var(--border); margin: 24px 0; }
+
+  /* LANG TOGGLE */
+  .lang-toggle {
+    display: flex;
+    gap: 3px;
+    background: var(--bg3);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 3px;
+  }
+
+  .lang-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 16px;
+    color: var(--text2);
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .lang-btn:hover { color: var(--text); }
+
+  .lang-btn.active {
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(46,184,176,0.3);
+  }
+
+  /* HOME TOOLBAR */
+  .home-toolbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .sort-toggle {
+    display: flex;
+    gap: 6px;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 4px;
+  }
+
+  .sort-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    color: var(--text2);
+    transition: all 0.2s;
+  }
+
+  .sort-btn:hover { color: var(--text); }
+
+  .sort-btn.active {
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(46,184,176,0.3);
+  }
+
+  /* AUTHOR LETTER HEADER */
+  .author-letter-header {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    width: 100%;
+  }
+
+  .author-letter-header:first-child { margin-top: 0; }
+
+  .books-grid-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 22px;
+    margin-bottom: 8px;
+  }
+
+  .add-book-standalone {
+    margin-top: 24px;
+  }
+
+  /* AUTHOR SUGGESTIONS */
+  .author-suggestions {
+    margin-top: 6px;
+    background: var(--bg2);
+    border: 2px solid var(--teal);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .author-suggestions:not(:empty) { display: block; }
+
+  .author-suggest-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text);
+    transition: background 0.12s;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .author-suggest-item:last-child { border-bottom: none; }
+  .author-suggest-item:hover { background: var(--bg3); color: var(--teal); font-weight: 600; }
+
+  /* ENTRANCE ANIMATIONS */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  }
+
+  @keyframes fadeSlideLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.85); }
+    70%  { transform: scale(1.04); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .book-card {
+    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+
+  .chapter-block {
+    animation: fadeSlideUp 0.4s ease both;
+  }
+
+  .word-item {
+    animation: fadeSlideLeft 0.35s ease both;
+  }
+
+  /* Stagger via nth-child */
+  .book-card:nth-child(1) { animation-delay: 0.05s; }
+  .book-card:nth-child(2) { animation-delay: 0.10s; }
+  .book-card:nth-child(3) { animation-delay: 0.15s; }
+  .book-card:nth-child(4) { animation-delay: 0.20s; }
+  .book-card:nth-child(5) { animation-delay: 0.25s; }
+  .book-card:nth-child(6) { animation-delay: 0.30s; }
+
+  .chapter-block:nth-child(1) { animation-delay: 0.05s; }
+  .chapter-block:nth-child(2) { animation-delay: 0.12s; }
+  .chapter-block:nth-child(3) { animation-delay: 0.19s; }
+  .chapter-block:nth-child(4) { animation-delay: 0.26s; }
+
+  .word-item:nth-child(1) { animation-delay: 0.03s; }
+  .word-item:nth-child(2) { animation-delay: 0.07s; }
+  .word-item:nth-child(3) { animation-delay: 0.11s; }
+  .word-item:nth-child(4) { animation-delay: 0.15s; }
+  .word-item:nth-child(5) { animation-delay: 0.19s; }
+
+  /* Glowing hover on cards */
+  .book-card:hover {
+    box-shadow: 0 0 0 2px rgba(46,184,176,0.5), 0 12px 40px rgba(46,184,176,0.2) !important;
+  }
+
+  /* Header wave SVG */
+  .header-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.25;
+  }
+
+  /* ALPHA HEADER */
+  .alpha-header {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--teal);
+    padding: 14px 0 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .alpha-header:first-child { padding-top: 6px; }
+
+  /* BOOK COVER IMAGE */
+  .book-card {
+    height: 260px;
+    backdrop-filter: blur(8px);
+    background: rgba(255,252,248,0.90) !important;
+    box-shadow: 0 4px 24px rgba(30,58,74,0.13);
+  }
+
+  .book-card.has-img {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 260px;
+  }
+
+  .book-cover-img-wrap {
+    width: 100%;
+    height: 160px;
+    min-height: 160px;
+    max-height: 160px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.35s ease;
+    display: block;
+  }
+
+  .book-card.has-img:hover .book-cover-img { transform: scale(1.05); }
+
+  .book-no-cover {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, var(--teal), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .book-no-cover-initial {
+    font-family: 'Fraunces', serif;
+    font-size: 3.5rem;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+  }
+
+  .book-card-info {
+    padding: 12px 16px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .book-card.has-img .book-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-card.has-img .book-author {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+  }
+
+  .book-card.has-img .book-delete {
+    background: rgba(253,246,236,0.88);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    z-index: 2;
+  }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    background: var(--bg3);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .upload-zone:hover { border-color: var(--teal); background: rgba(46,184,176,0.05); }
+
+  .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+  }
+
+  .upload-icon { font-size: 2rem; }
+
+  .upload-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text2);
+  }
+
+  .upload-sub { font-size: 0.75rem; color: var(--text2); opacity: 0.7; }
+
+  .upload-preview {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    header { padding: 14px 18px; }
+    main { padding: 24px 18px; }
+    .header-search { width: 150px; }
+    .books-grid { grid-template-columns: 1fr 1fr; }
+    .book-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="sakura-container"><canvas id="sakura-canvas"></canvas></div>
+  <svg class="header-wave" viewBox="0 0 1440 40" preserveAspectRatio="none">
+    <path d="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z" fill="rgba(46,184,176,0.3)">
+      <animate attributeName="d" dur="6s" repeatCount="indefinite"
+        values="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z;
+                M0,10 C360,0 1080,40 1440,10 L1440,40 L0,40 Z;
+                M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z"/>
+    </path>
+    <path d="M0,28 C480,10 960,40 1440,20 L1440,40 L0,40 Z" fill="rgba(232,115,74,0.2)">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite"
+        values="M0,28 C480,10 960,40 1440,20 L1440,40 L0,40 Z;
+                M0,18 C480,38 960,10 1440,30 L1440,40 L0,40 Z;
+                M0,28 C480,10 960,40 1440,20 L1440,40 L0,40 Z"/>
+    </path>
+  </svg>
+  <div class="logo" onclick="goHome()">
+  <span class="logo-bean">Bean</span>
+  <span class="logo-book">Book</span>
+</div>
+  <button class="btn btn-ghost btn-sm" onclick="openApiKeyModal()" id="apikey-status" style="font-size:0.78rem;padding:6px 12px">⚙ Clé API</button>
+  <button class="btn btn-ghost btn-sm" onclick="openSyncModal()" id="sync-status" style="font-size:0.78rem;padding:6px 12px" title="Synchronisation GitHub">☁ Sync</button>
+  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bg-upload').click()" style="font-size:0.78rem;padding:6px 12px" title="Changer le fond d'écran">🖼 Fond</button>
+  <input type="file" id="bg-upload" accept="image/*" style="display:none" onchange="changeBg(this)" />
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <div class="search-wrapper">
+    <div class="header-search">
+      <span style="color:var(--text2);font-size:0.85rem">🔍</span>
+      <input type="text" id="global-search" placeholder="Chercher un mot…" autocomplete="off" oninput="globalSearch(this.value)" onfocus="showSearchResults()" />
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <!-- HOME PAGE -->
+  <canvas id="bg-sakura-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas><canvas id="scene-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+  <div id="home-page" style="position:relative;z-index:1;">
+    <h1 class="page-title">Mes trésors</h1>
+    <p class="page-sub" id="home-sub">Cliquez sur un trésor pour explorer son vocabulaire.</p>
+    <div class="wave-deco"></div>
+    <div class="home-toolbar">
+      <div class="sort-toggle">
+        <button class="sort-btn active" id="sort-date" onclick="setSort('date')">🕐 Récents</button>
+        <button class="sort-btn" id="sort-author" onclick="setSort('author')">🔤 Auteurs A–Z</button>
+      </div>
+    </div>
+    <div id="books-grid"></div>
+  </div>
+
+  <!-- BOOK PAGE -->
+  <div id="book-page" style="position:relative;z-index:1;">
+    <div class="book-header">
+      <div class="book-big-cover" id="book-big-cover"></div>
+      <div class="book-info">
+        <h2 id="book-title-display"></h2>
+        <div class="author" id="book-author-display"></div>
+        <div class="stats-row">
+          <span class="stat-pill" id="stat-chapters"></span>
+          <span class="stat-pill" id="stat-words"></span>
+        </div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="openEditBook()">✎ Modifier</button>
+        <button class="btn btn-ghost btn-sm export-btn" onclick="exportBook()">⬇ Exporter</button>
+      </div>
+    </div>
+
+    <div class="chapters-header">
+      <h3 class="section-title">Chapitres</h3>
+      <button class="btn btn-primary btn-sm" onclick="openAddChapter()">+ Ajouter un chapitre</button>
+    </div>
+
+    <div id="chapters-list"></div>
+  </div>
+</main>
+
+<!-- MODAL: Nouveau trésor -->
+<div class="modal-overlay" id="modal-book">
+  <div class="modal">
+    <h3>Nouveau trésor</h3>
+    <div class="form-group">
+      <label>Titre du trésor *</label>
+      <input type="text" id="input-title" placeholder="Ex: Le Comte de Monte-Cristo" />
+    </div>
+    <div class="form-group">
+      <label>Auteur</label>
+      <input type="text" id="input-author" placeholder="Ex: Alexandre Dumas" autocomplete="off" oninput="filterAuthorSuggestions(this.value,'author-suggestions')" />
+      <div class="author-suggestions" id="author-suggestions"></div>
+    </div>
+    <div class="form-group">
+      <label>Couverture</label>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('cover-upload').click()" ondrop="dropCover(event,'cover-upload','cover-preview','cover-placeholder')" ondragover="event.preventDefault()">
+        <input type="file" id="cover-upload" accept="image/*" style="display:none" onchange="previewCover(this,'cover-preview','cover-placeholder')" />
+        <div id="cover-placeholder" class="upload-placeholder">
+          <div class="upload-icon">🖼</div>
+          <div class="upload-label">Cliquez ou glissez une image ici</div>
+          <div class="upload-sub">JPG, PNG, WEBP…</div>
+        </div>
+        <img id="cover-preview" class="upload-preview" style="display:none" />
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;display:none" id="cover-clear-btn" onclick="clearUpload('cover-upload','cover-preview','cover-placeholder','cover-clear-btn')">✕ Retirer l'image</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-book')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveBook()">Créer le trésor</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Nouveau chapitre -->
+<div class="modal-overlay" id="modal-chapter">
+  <div class="modal">
+    <h3>Nouveau chapitre</h3>
+    <div class="form-group">
+      <label>Nom du chapitre *</label>
+      <input type="text" id="input-chapter" placeholder="Ex: Chapitre 1 — L'Arrivée" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-chapter')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveChapter()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmation suppression -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <h3 id="confirm-title">Confirmer la suppression</h3>
+    <p id="confirm-msg" style="color:var(--text2);font-size:0.9rem;margin-bottom:24px"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Annuler</button>
+      <button class="btn btn-danger" id="confirm-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Modifier livre -->
+<div class="modal-overlay" id="modal-edit-book">
+  <div class="modal">
+    <h3>Modifier le trésor</h3>
+    <div class="form-group">
+      <label>Titre du trésor *</label>
+      <input type="text" id="edit-book-title" placeholder="Titre du trésor" />
+    </div>
+    <div class="form-group">
+      <label>Auteur</label>
+      <input type="text" id="edit-book-author" placeholder="Auteur" autocomplete="off" oninput="filterAuthorSuggestions(this.value,'edit-author-suggestions')" />
+      <div class="author-suggestions" id="edit-author-suggestions"></div>
+    </div>
+    <div class="form-group">
+      <label>Couverture</label>
+      <div class="upload-zone" id="edit-upload-zone" onclick="document.getElementById('edit-cover-upload').click()" ondrop="dropCover(event,'edit-cover-upload','edit-cover-preview','edit-cover-placeholder')" ondragover="event.preventDefault()">
+        <input type="file" id="edit-cover-upload" accept="image/*" style="display:none" onchange="previewCover(this,'edit-cover-preview','edit-cover-placeholder')" />
+        <div id="edit-cover-placeholder" class="upload-placeholder">
+          <div class="upload-icon">🖼</div>
+          <div class="upload-label">Cliquez ou glissez une image ici</div>
+          <div class="upload-sub">JPG, PNG, WEBP…</div>
+        </div>
+        <img id="edit-cover-preview" class="upload-preview" style="display:none" />
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;display:none" id="edit-cover-clear-btn" onclick="clearUpload('edit-cover-upload','edit-cover-preview','edit-cover-placeholder','edit-cover-clear-btn')">✕ Retirer l'image</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-book')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveEditBook()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Modifier chapitre -->
+<div class="modal-overlay" id="modal-edit-chapter">
+  <div class="modal">
+    <h3>Modifier le chapitre</h3>
+    <div class="form-group">
+      <label>Nom du chapitre *</label>
+      <input type="text" id="edit-chapter-name" placeholder="Nom du chapitre" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-chapter')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveEditChapter()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Clé API -->
+<div class="modal-overlay" id="modal-apikey">
+  <div class="modal">
+    <h3>🔑 Clé API Anthropic</h3>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:20px;line-height:1.6">
+      Nécessaire pour la recherche de définitions en français via Claude.<br>
+      Obtenez votre clé sur <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a>.<br>
+      Elle est stockée uniquement dans votre navigateur.
+    </p>
+    <div class="form-group">
+      <label>Clé API (sk-ant-...)</label>
+      <input type="password" id="input-apikey" placeholder="sk-ant-api03-..." />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-apikey')">Annuler</button>
+      <button class="btn btn-danger btn-sm" onclick="clearApiKey()" style="margin-right:auto">Supprimer</button>
+      <button class="btn btn-primary" onclick="saveApiKey()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Sync GitHub Gist -->
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal">
+    <h3>☁ Synchronisation GitHub</h3>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:20px;line-height:1.6">
+      Tes données sont sauvegardées dans un <strong>Gist GitHub privé</strong> et synchronisées entre tous tes appareils.<br><br>
+      <strong>Comment créer ton token :</strong><br>
+      1. Va sur <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">github.com/settings/tokens/new</a><br>
+      2. Note : <code style="background:var(--bg3);padding:2px 6px;border-radius:4px">BeanBook Sync</code><br>
+      3. Expiration : <strong>No expiration</strong><br>
+      4. Coche uniquement <strong>gist</strong><br>
+      5. Clique <strong>Generate token</strong> et copie-le ici
+    </p>
+    <div class="form-group">
+      <label>Token GitHub (ghp_...)</label>
+      <input type="password" id="input-gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    </div>
+    <div id="sync-info" style="font-size:0.8rem;color:var(--text2);margin-top:8px;min-height:20px"></div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Fermer</button>
+      <button class="btn btn-danger btn-sm" onclick="clearSyncConfig()" style="margin-right:auto">Déconnecter</button>
+      <button class="btn btn-secondary btn-sm" onclick="forcePullFromGist()" id="btn-pull" style="display:none">⬇ Récupérer</button>
+      <button class="btn btn-primary" onclick="saveSyncConfig()">Connecter</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+let db = JSON.parse(localStorage.getItem('beanbook_db') || '{"books":[]}');
+let currentBookId = null;
+let selectedEmoji = '📖';
+let addWordChapterId = null;
+let selectedLang = 'fr';
+let apiKey = localStorage.getItem('beanbook_apikey') || '';
+
+// ─── GITHUB GIST SYNC ────────────────────────────────────
+let ghToken = localStorage.getItem('beanbook_gh_token') || '';
+let ghGistId = localStorage.getItem('beanbook_gist_id') || '';
+let syncTimeout = null;
+const GIST_FILENAME = 'beanbook_data.json';
+
+function updateSyncStatus() {
+  const btn = document.getElementById('sync-status');
+  if (!btn) return;
+  if (ghToken && ghGistId) {
+    btn.textContent = '✓ Sync';
+    btn.style.color = 'var(--success)';
+    btn.style.borderColor = 'var(--success)';
+  } else if (ghToken) {
+    btn.textContent = '⟳ Sync';
+    btn.style.color = 'var(--accent)';
+    btn.style.borderColor = 'var(--accent)';
+  } else {
+    btn.textContent = '☁ Sync';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
+}
+
+function openSyncModal() {
+  document.getElementById('input-gh-token').value = ghToken;
+  const info = document.getElementById('sync-info');
+  const pullBtn = document.getElementById('btn-pull');
+  if (ghGistId) {
+    info.innerHTML = `✓ Connecté — Gist ID : <code style="font-size:0.75rem">${ghGistId}</code>`;
+    info.style.color = 'var(--success)';
+    pullBtn.style.display = 'inline-flex';
+  } else {
+    info.textContent = '';
+    pullBtn.style.display = 'none';
+  }
+  openModal('modal-sync');
+  setTimeout(() => document.getElementById('input-gh-token').focus(), 100);
+}
+
+async function saveSyncConfig() {
+  const token = document.getElementById('input-gh-token').value.trim();
+  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+    toast('Token invalide (doit commencer par ghp_ ou github_pat_)', 'error'); return;
+  }
+  const info = document.getElementById('sync-info');
+  info.textContent = 'Connexion en cours…'; info.style.color = 'var(--text2)';
+
+  ghToken = token;
+  localStorage.setItem('beanbook_gh_token', ghToken);
+
+  // Si on a déjà un gist ID, on vérifie qu'il existe encore
+  if (ghGistId) {
+    const ok = await verifyGist();
+    if (ok) {
+      info.innerHTML = `✓ Connecté — Gist ID : <code style="font-size:0.75rem">${ghGistId}</code>`;
+      info.style.color = 'var(--success)';
+      document.getElementById('btn-pull').style.display = 'inline-flex';
+      updateSyncStatus(); toast('Synchronisation activée !'); return;
+    } else {
+      ghGistId = ''; localStorage.removeItem('beanbook_gist_id');
+    }
+  }
+
+  // Cherche un gist existant avec notre filename
+  const found = await findExistingGist();
+  if (found) {
+    ghGistId = found;
+    localStorage.setItem('beanbook_gist_id', ghGistId);
+    // Pull les données depuis le gist existant
+    await pullFromGist(true);
+    info.innerHTML = `✓ Gist existant trouvé et chargé !`;
+    info.style.color = 'var(--success)';
+    document.getElementById('btn-pull').style.display = 'inline-flex';
+    updateSyncStatus(); toast('Données récupérées depuis le cloud !');
+    return;
+  }
+
+  // Crée un nouveau gist
+  const created = await createGist();
+  if (created) {
+    info.innerHTML = `✓ Connecté — Gist ID : <code style="font-size:0.75rem">${ghGistId}</code>`;
+    info.style.color = 'var(--success)';
+    document.getElementById('btn-pull').style.display = 'inline-flex';
+    updateSyncStatus(); toast('Synchronisation activée !');
+  } else {
+    info.textContent = 'Erreur de connexion. Vérifie ton token.';
+    info.style.color = 'var(--danger)';
+  }
+}
+
+async function verifyGist() {
+  try {
+    const r = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+async function findExistingGist() {
+  try {
+    const r = await fetch('https://api.github.com/gists?per_page=100', {
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) return null;
+    const gists = await r.json();
+    const found = gists.find(g => g.files && g.files[GIST_FILENAME]);
+    return found ? found.id : null;
+  } catch { return null; }
+}
+
+async function createGist() {
+  try {
+    const clean = { books: db.books.map(b => { const {coverImg,...r} = b; return r; }) };
+    const r = await fetch('https://api.github.com/gists', {
+      method: 'POST',
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: 'BeanBook – Dictionnaire personnel',
+        public: false,
+        files: { [GIST_FILENAME]: { content: JSON.stringify(clean, null, 2) } }
+      })
+    });
+    if (!r.ok) return false;
+    const data = await r.json();
+    ghGistId = data.id;
+    localStorage.setItem('beanbook_gist_id', ghGistId);
+    return true;
+  } catch { return false; }
+}
+
+async function pushToGist() {
+  if (!ghToken || !ghGistId) return;
+  try {
+    const clean = { books: db.books.map(b => { const {coverImg,...r} = b; return r; }) };
+    await fetch(`https://api.github.com/gists/${ghGistId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(clean, null, 2) } } })
+    });
+  } catch { /* silencieux, on ne bloque pas l'UX */ }
+}
+
+async function pullFromGist(silent = false) {
+  if (!ghToken || !ghGistId) return;
+  try {
+    const r = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) return;
+    const data = await r.json();
+    const content = data.files?.[GIST_FILENAME]?.content;
+    if (!content) return;
+    const parsed = JSON.parse(content);
+    if (parsed && Array.isArray(parsed.books)) {
+      db = parsed;
+      localStorage.setItem('beanbook_db', JSON.stringify(db));
+      // Recharger les images depuis IndexedDB
+      for (const book of db.books) {
+        const img = await getImage(book.id);
+        if (img) book.coverImg = img;
+      }
+      if (!silent) { toast('Données synchronisées !'); renderHome(); }
+    }
+  } catch { /* silencieux */ }
+}
+
+async function forcePullFromGist() {
+  toast('Récupération en cours…');
+  await pullFromGist(false);
+}
+
+function clearSyncConfig() {
+  ghToken = ''; ghGistId = '';
+  localStorage.removeItem('beanbook_gh_token');
+  localStorage.removeItem('beanbook_gist_id');
+  document.getElementById('input-gh-token').value = '';
+  document.getElementById('sync-info').textContent = '';
+  document.getElementById('btn-pull').style.display = 'none';
+  updateSyncStatus(); toast('Synchronisation déconnectée.');
+}
+
+// ─── INDEXEDDB ───────────────────────────────────────────
+let idb = null;
+
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('beanbook_images', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('covers', { keyPath: 'id' });
+    req.onsuccess = e => { idb = e.target.result; resolve(idb); };
+    req.onerror = () => reject(req.error);
+  });
+}
+function saveImage(id, base64) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction('covers', 'readwrite');
+    tx.objectStore('covers').put({ id, data: base64 });
+    tx.oncomplete = resolve; tx.onerror = () => reject(tx.error);
+  });
+}
+function getImage(id) {
+  return new Promise(resolve => {
+    const tx = idb.transaction('covers', 'readonly');
+    const req = tx.objectStore('covers').get(id);
+    req.onsuccess = () => resolve(req.result?.data || null);
+    req.onerror = () => resolve(null);
+  });
+}
+function deleteImage(id) {
+  return new Promise(resolve => {
+    const tx = idb.transaction('covers', 'readwrite');
+    tx.objectStore('covers').delete(id);
+    tx.oncomplete = resolve; tx.onerror = resolve;
+  });
+}
+
+function save() {
+  const clean = { books: db.books.map(b => { const {coverImg,...r} = b; return r; }) };
+  localStorage.setItem('beanbook_db', JSON.stringify(clean));
+  // Push vers Gist avec debounce (évite trop de requêtes en cas de modifications rapides)
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => pushToGist(), 1500);
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ─── API KEY ─────────────────────────────────────────────
+function openApiKeyModal() {
+  document.getElementById('input-apikey').value = apiKey;
+  updateApiKeyStatus();
+  openModal('modal-apikey');
+  setTimeout(() => document.getElementById('input-apikey').focus(), 100);
+}
+function saveApiKey() {
+  const val = document.getElementById('input-apikey').value.trim();
+  if (!val.startsWith('sk-')) { toast('Clé invalide (doit commencer par sk-)', 'error'); return; }
+  apiKey = val; localStorage.setItem('beanbook_apikey', apiKey);
+  closeModal('modal-apikey'); updateApiKeyStatus(); toast('Clé API enregistrée !');
+}
+function clearApiKey() {
+  apiKey = ''; localStorage.removeItem('beanbook_apikey');
+  document.getElementById('input-apikey').value = '';
+  updateApiKeyStatus(); toast('Clé supprimée.');
+}
+function updateApiKeyStatus() {
+  const btn = document.getElementById('apikey-status');
+  if (apiKey) { btn.textContent = '✓ Clé API'; btn.style.color='var(--success)'; btn.style.borderColor='var(--success)'; }
+  else { btn.textContent = '⚙ Clé API'; btn.style.color=''; btn.style.borderColor=''; }
+}
+
+// ─── FOND D'ÉCRAN ─────────────────────────────────────────
+function changeBg(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const data = e.target.result;
+    await saveImage('__background__', data);
+    applyBg(data); toast('Fond mis à jour !');
+  };
+  reader.readAsDataURL(file);
+}
+function applyBg(dataUrl) {
+  document.body.style.cssText += `background-image:url('${dataUrl}');background-size:cover;background-position:center;background-attachment:fixed;`;
+}
+async function loadSavedBg() {
+  try { const img = await getImage('__background__'); if (img) applyBg(img); } catch(e) {}
+}
+
+// ─── TOAST ───────────────────────────────────────────────
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function goHome() {
+  currentBookId = null;
+  document.getElementById('home-page').style.display = 'block';
+  document.getElementById('book-page').style.display = 'none';
+  setBreadcrumb([]); renderHome();
+}
+function openBook(id) {
+  currentBookId = id;
+  const book = db.books.find(b => b.id === id);
+  document.getElementById('home-page').style.display = 'none';
+  document.getElementById('book-page').style.display = 'block';
+  setBreadcrumb([{ label: book.title }]); renderBook();
+}
+function setBreadcrumb(items) {
+  const el = document.getElementById('breadcrumb');
+  if (!items.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<span onclick="goHome()">Accueil</span>` +
+    items.map(i => `<span class="sep">›</span><span>${i.label}</span>`).join('');
+}
+
+// ─── HOME ─────────────────────────────────────────────────
+let currentSort = 'date';
+
+function setSort(sort) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`sort-${sort}`).classList.add('active');
+  renderHome();
+}
+function getAuthorSortKey(author) {
+  if (!author) return 'zzz';
+  const parts = author.trim().split(' ');
+  return parts[parts.length-1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function renderHome() {
+  const grid = document.getElementById('books-grid');
+  const sub = document.getElementById('home-sub');
+  const total = db.books.reduce((s,b) => s + b.chapters.reduce((cs,c) => cs + c.words.length, 0), 0);
+  sub.textContent = `${db.books.length} trésor${db.books.length!==1?'s':''} · ${total} mot${total!==1?'s':''} enregistré${total!==1?'s':''}`;
+
+  let sorted = [...db.books];
+  if (currentSort === 'author') {
+    sorted.sort((a,b) => {
+      const cmp = getAuthorSortKey(a.author).localeCompare(getAuthorSortKey(b.author),'fr');
+      if (cmp !== 0) return cmp;
+      return a.title.localeCompare(b.title,'fr',{sensitivity:'base'});
+    });
+  }
+
+  let html = '', lastLetter = '';
+  if (currentSort === 'date') html += '<div class="books-grid">';
+
+  sorted.forEach(book => {
+    const wordCount = book.chapters.reduce((s,c) => s + c.words.length, 0);
+    if (currentSort === 'author') {
+      const letter = getAuthorSortKey(book.author)[0]?.toUpperCase() || '#';
+      if (letter !== lastLetter) {
+        if (lastLetter !== '') html += '</div>';
+        html += `<div class="author-letter-header">${letter}</div><div class="books-grid-group">`;
+        lastLetter = letter;
+      }
+    }
+    html += `
+    <div class="book-card${book.coverImg?' has-img':''}" onclick="openBook('${book.id}')">
+      <button class="book-delete" onclick="event.stopPropagation();confirmDelete('book','${book.id}')" title="Supprimer">✕</button>
+      ${book.coverImg
+        ? `<div class="book-cover-img-wrap"><img class="book-cover-img" src="${book.coverImg}" alt="${esc(book.title)}" /></div>`
+        : `<div class="book-no-cover"><span class="book-no-cover-initial">${esc(book.title[0]?.toUpperCase()||'?')}</span></div>`}
+      <div class="book-card-info">
+        <div class="book-title">${esc(book.title)}</div>
+        <div class="book-author">${esc(book.author||'Auteur inconnu')}</div>
+        <div class="book-stats"><span>${book.chapters.length} chap.</span><span>${wordCount} mots</span></div>
+      </div>
+    </div>`;
+  });
+
+  if (currentSort === 'author' && lastLetter !== '') html += '</div>';
+  if (currentSort === 'date') html += '</div>';
+  html += `<div class="add-book-standalone"><div class="add-book-card" onclick="openAddBook()"><div class="plus">＋</div><div style="font-size:0.85rem">Nouveau trésor</div></div></div>`;
+  grid.innerHTML = html;
+}
+
+// ─── AUTHOR SUGGESTIONS ───────────────────────────────────
+function getKnownAuthors() {
+  return [...new Set(db.books.map(b=>b.author).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+}
+function filterAuthorSuggestions(val, containerId) {
+  const container = document.getElementById(containerId);
+  const filtered = val.trim() ? getKnownAuthors().filter(a=>a.toLowerCase().includes(val.toLowerCase())) : [];
+  if (!filtered.length) { container.innerHTML=''; return; }
+  const inputId = containerId==='author-suggestions'?'input-author':'edit-book-author';
+  container.innerHTML = filtered.map(a=>`<div class="author-suggest-item" onclick="pickAuthor('${esc(a)}','${inputId}','${containerId}')">${esc(a)}</div>`).join('');
+}
+function pickAuthor(name, inputId, containerId) {
+  document.getElementById(inputId).value = name;
+  document.getElementById(containerId).innerHTML = '';
+}
+
+// ─── BOOK PAGE ────────────────────────────────────────────
+function renderBook() {
+  const book = db.books.find(b => b.id === currentBookId);
+  if (!book) return goHome();
+  const bigCover = document.getElementById('book-big-cover');
+  if (book.coverImg) {
+    bigCover.innerHTML = `<img src="${book.coverImg}" style="height:96px;border-radius:10px;box-shadow:0 4px 16px rgba(30,58,74,0.2);object-fit:cover;width:64px" />`;
+  } else {
+    bigCover.innerHTML = `<div style="width:64px;height:96px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--accent));display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:2rem;color:#fff;font-weight:600">${book.title[0]?.toUpperCase()||'?'}</div>`;
+  }
+  document.getElementById('book-title-display').textContent = book.title;
+  document.getElementById('book-author-display').textContent = book.author||'';
+  const wordCount = book.chapters.reduce((s,c)=>s+c.words.length,0);
+  document.getElementById('stat-chapters').textContent = `${book.chapters.length} chapitre${book.chapters.length!==1?'s':''}`;
+  document.getElementById('stat-words').textContent = `${wordCount} mot${wordCount!==1?'s':''}`;
+  const list = document.getElementById('chapters-list');
+  if (!book.chapters.length) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📑</div><p>Aucun chapitre. Ajoutez le premier !</p></div>`;
+    return;
+  }
+  list.innerHTML = book.chapters.map(ch => `
+  <div class="chapter-block" id="ch-${ch.id}">
+    <div class="chapter-toggle" onclick="toggleChapter('${ch.id}')">
+      <div class="chapter-toggle-left">
+        <span class="chapter-arrow">▶</span>
+        <span class="chapter-name">${esc(ch.name)}</span>
+        <span class="chapter-word-count">${ch.words.length} mot${ch.words.length!==1?'s':''}</span>
+      </div>
+      <div class="chapter-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-secondary btn-sm" onclick="showAddWordForm('${ch.id}')">+ Mot</button>
+        <button class="btn btn-ghost btn-sm" onclick="openEditChapter('${ch.id}')">✎</button>
+        <button class="btn btn-ghost btn-sm" onclick="confirmDelete('chapter','${ch.id}')">✕</button>
+      </div>
+    </div>
+    <div class="chapter-body">
+      <div class="words-list" id="words-${ch.id}">${renderWords(ch)}</div>
+      <div id="add-word-form-${ch.id}"></div>
+    </div>
+  </div>`).join('');
+}
+
+function renderWords(ch) {
+  if (!ch.words.length) return `<div style="color:var(--text2);font-size:0.85rem;padding:8px 0">Aucun mot pour l'instant.</div>`;
+  const sorted = [...ch.words].sort((a,b)=>a.word.localeCompare(b.word,'fr',{sensitivity:'base'}));
+  let lastLetter = '';
+  return sorted.map(w => {
+    const fl = w.word[0].toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    let hdr = '';
+    if (fl !== lastLetter) { lastLetter=fl; hdr=`<div class="alpha-header">${fl}</div>`; }
+    return hdr + `
+    <div class="word-item" id="word-${w.id}">
+      <span class="word-term">${esc(w.word)}</span>
+      <div class="word-def-wrap" id="def-wrap-${w.id}">
+        <span class="word-def" id="def-text-${w.id}">${esc(w.definition)}</span>
+        <textarea class="def-inline-edit" id="def-inline-${w.id}" style="display:none">${esc(w.definition)}</textarea>
+      </div>
+      <div class="word-actions">
+        <button class="word-edit" id="edit-btn-${w.id}" onclick="toggleEditWord('${ch.id}','${w.id}')" title="Modifier">✎</button>
+        <button class="word-save" id="save-btn-${w.id}" onclick="saveEditWord('${ch.id}','${w.id}')" title="Enregistrer" style="display:none">✔</button>
+        <button class="word-delete" onclick="deleteWord('${ch.id}','${w.id}')" title="Supprimer">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleChapter(id) { document.getElementById(`ch-${id}`).classList.toggle('open'); }
+
+// ─── WORD EDIT ────────────────────────────────────────────
+function toggleEditWord(chapterId, wordId) {
+  const defText=document.getElementById(`def-text-${wordId}`);
+  const defEdit=document.getElementById(`def-inline-${wordId}`);
+  const editBtn=document.getElementById(`edit-btn-${wordId}`);
+  const saveBtn=document.getElementById(`save-btn-${wordId}`);
+  if (defEdit.style.display!=='none') {
+    defEdit.style.display='none'; defText.style.display='';
+    editBtn.textContent='✎'; editBtn.title='Modifier'; saveBtn.style.display='none';
+  } else {
+    defEdit.style.display='block'; defText.style.display='none';
+    editBtn.textContent='✖'; editBtn.title='Annuler'; saveBtn.style.display='';
+    defEdit.focus();
+  }
+}
+function saveEditWord(chapterId, wordId) {
+  const newDef = document.getElementById(`def-inline-${wordId}`).value.trim();
+  if (!newDef) { toast('La définition ne peut pas être vide.','error'); return; }
+  const book=db.books.find(b=>b.id===currentBookId);
+  const chapter=book.chapters.find(c=>c.id===chapterId);
+  const word=chapter.words.find(w=>w.id===wordId);
+  word.definition=newDef; save();
+  document.getElementById(`def-text-${wordId}`).textContent=newDef;
+  document.getElementById(`def-inline-${wordId}`).style.display='none';
+  document.getElementById(`def-text-${wordId}`).style.display='';
+  document.getElementById(`edit-btn-${wordId}`).textContent='✎';
+  document.getElementById(`save-btn-${wordId}`).style.display='none';
+  toast('Définition mise à jour !');
+}
+function deleteWord(chapterId, wordId) {
+  const book=db.books.find(b=>b.id===currentBookId);
+  const chapter=book.chapters.find(c=>c.id===chapterId);
+  chapter.words=chapter.words.filter(w=>w.id!==wordId); save();
+  document.getElementById(`words-${chapterId}`).innerHTML=renderWords(chapter);
+  document.getElementById(`ch-${chapterId}`).querySelector('.chapter-word-count').textContent=`${chapter.words.length} mot${chapter.words.length!==1?'s':''}`;
+  toast('Mot supprimé.');
+}
+
+// ─── ADD WORD ─────────────────────────────────────────────
+function showAddWordForm(chapterId) {
+  const chEl=document.getElementById(`ch-${chapterId}`);
+  if (!chEl.classList.contains('open')) chEl.classList.add('open');
+  addWordChapterId=chapterId;
+  const container=document.getElementById(`add-word-form-${chapterId}`);
+  container.innerHTML=`
+  <div class="add-word-form">
+    <div class="add-word-row">
+      <input type="text" id="word-input-${chapterId}" placeholder="Entrez un mot…" onkeydown="if(event.key==='Enter')searchDefinition('${chapterId}')" />
+      <div class="lang-toggle">
+        <button class="lang-btn${selectedLang==='fr'?' active':''}" onclick="setLang('fr','${chapterId}')">FR</button>
+        <button class="lang-btn${selectedLang==='en'?' active':''}" onclick="setLang('en','${chapterId}')">EN</button>
+      </div>
+      <button class="btn btn-secondary" onclick="searchDefinition('${chapterId}')">🔍 Chercher</button>
+    </div>
+    <div class="def-preview" id="def-preview-${chapterId}"></div>
+    <textarea class="def-edit" id="def-edit-${chapterId}" placeholder="La définition apparaîtra ici…"></textarea>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="saveWord('${chapterId}')">💾 Enregistrer</button>
+      <button class="btn btn-ghost" onclick="cancelAddWord('${chapterId}')">Annuler</button>
+    </div>
+  </div>`;
+  document.getElementById(`word-input-${chapterId}`).focus();
+}
+
+function setLang(lang, chapterId) {
+  selectedLang=lang;
+  document.querySelectorAll(`#add-word-form-${chapterId} .lang-btn`).forEach((b,i)=>{
+    b.classList.toggle('active', (i===0&&lang==='fr')||(i===1&&lang==='en'));
+  });
+}
+
+async function searchDefinition(chapterId) {
+  const wordInput=document.getElementById(`word-input-${chapterId}`);
+  const word=wordInput.value.trim(); if (!word) return;
+  const preview=document.getElementById(`def-preview-${chapterId}`);
+  const editArea=document.getElementById(`def-edit-${chapterId}`);
+  preview.className='def-preview visible';
+  preview.innerHTML='<span class="loading"></span> Recherche en cours…';
+  editArea.className='def-edit';
+  let definition=null;
+  const lang=selectedLang;
+
+  if (lang==='fr') {
+    if (!apiKey) {
+      preview.innerHTML=`<span style="color:var(--accent)">⚙ Clé API requise pour les définitions FR.</span> <span style="cursor:pointer;text-decoration:underline" onclick="openApiKeyModal()">Configurer →</span>`;
+      editArea.className='def-edit visible'; editArea.value=''; return;
+    }
+    try {
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-opus-4-5',max_tokens:300,messages:[{role:'user',content:`Donne la définition du mot français "${word}" de façon concise. Format: [nature grammaticale] Définition. Réponds UNIQUEMENT avec la définition.`}]})
+      });
+      if (res.ok) { const d=await res.json(); definition=d.content?.[0]?.text?.trim()||null; }
+      else if (res.status===401) toast('Clé API invalide.','error');
+    } catch(e) {}
+  } else {
+    try {
+      const res=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+      if (res.ok) {
+        const data=await res.json();
+        const meanings=data[0]?.meanings||[];
+        if (meanings.length) definition=meanings.slice(0,2).map(m=>`[${m.partOfSpeech}] `+m.definitions.slice(0,2).map(d=>d.definition).join(' ')).join('\n');
+      }
+    } catch(e) {}
+  }
+
+  if (definition) {
+    preview.textContent=definition; editArea.className='def-edit visible'; editArea.value=definition; toast('Définition trouvée !');
+  } else {
+    preview.innerHTML=`<span style="color:var(--danger)">Aucune définition trouvée.</span> Saisissez manuellement.`;
+    editArea.className='def-edit visible'; editArea.value=''; editArea.focus();
+  }
+}
+
+function saveWord(chapterId) {
+  const word=document.getElementById(`word-input-${chapterId}`).value.trim();
+  const def=document.getElementById(`def-edit-${chapterId}`).value.trim();
+  if (!word) { toast('Entrez un mot.','error'); return; }
+  if (!def) { toast('Ajoutez une définition.','error'); return; }
+  const book=db.books.find(b=>b.id===currentBookId);
+  const chapter=book.chapters.find(c=>c.id===chapterId);
+  chapter.words.push({id:uid(),word,definition:def,addedAt:new Date().toISOString()});
+  chapter.words.sort((a,b)=>a.word.localeCompare(b.word,'fr',{sensitivity:'base'}));
+  save();
+  document.getElementById(`words-${chapterId}`).innerHTML=renderWords(chapter);
+  document.getElementById(`ch-${chapterId}`).querySelector('.chapter-word-count').textContent=`${chapter.words.length} mot${chapter.words.length!==1?'s':''}`;
+  const wc=db.books.find(b=>b.id===currentBookId).chapters.reduce((s,c)=>s+c.words.length,0);
+  document.getElementById('stat-words').textContent=`${wc} mot${wc!==1?'s':''}`;
+  cancelAddWord(chapterId); toast(`"${word}" enregistré !`);
+}
+function cancelAddWord(chapterId) { document.getElementById(`add-word-form-${chapterId}`).innerHTML=''; }
+
+// ─── MODALS ───────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+// ─── ADD BOOK ─────────────────────────────────────────────
+let selectedCoverImg='', editSelectedCoverImg='';
+
+function openAddBook() {
+  selectedCoverImg='';
+  document.getElementById('input-title').value='';
+  document.getElementById('input-author').value='';
+  document.getElementById('author-suggestions').innerHTML='';
+  document.getElementById('cover-upload').value='';
+  document.getElementById('cover-preview').src='';
+  document.getElementById('cover-preview').style.display='none';
+  document.getElementById('cover-placeholder').style.display='flex';
+  document.getElementById('cover-clear-btn').style.display='none';
+  openModal('modal-book');
+  setTimeout(()=>document.getElementById('input-title').focus(),100);
+}
+
+function previewCover(input,previewId,placeholderId) {
+  const file=input.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const isEdit=previewId.startsWith('edit');
+    const data=e.target.result;
+    if(isEdit) editSelectedCoverImg=data; else selectedCoverImg=data;
+    document.getElementById(previewId).src=data;
+    document.getElementById(previewId).style.display='block';
+    document.getElementById(placeholderId).style.display='none';
+    const cb=document.getElementById(isEdit?'edit-cover-clear-btn':'cover-clear-btn');
+    if(cb) cb.style.display='inline-flex';
+  };
+  reader.readAsDataURL(file);
+}
+function dropCover(event,inputId,previewId,placeholderId) {
+  event.preventDefault();
+  const file=event.dataTransfer.files[0];
+  if(!file||!file.type.startsWith('image/')) return;
+  const input=document.getElementById(inputId);
+  const dt=new DataTransfer(); dt.items.add(file); input.files=dt.files;
+  previewCover(input,previewId,placeholderId);
+}
+function clearUpload(inputId,previewId,placeholderId,clearBtnId) {
+  const isEdit=inputId.startsWith('edit');
+  if(isEdit) editSelectedCoverImg=''; else selectedCoverImg='';
+  document.getElementById(inputId).value='';
+  document.getElementById(previewId).src=''; document.getElementById(previewId).style.display='none';
+  document.getElementById(placeholderId).style.display='flex';
+  document.getElementById(clearBtnId).style.display='none';
+}
+
+function saveBook() {
+  const title=document.getElementById('input-title').value.trim();
+  if(!title){toast('Le titre est requis.','error');return;}
+  const book={id:uid(),title,author:document.getElementById('input-author').value.trim(),cover:'📖',createdAt:new Date().toISOString(),chapters:[]};
+  db.books.push(book); save();
+  if(selectedCoverImg){book.coverImg=selectedCoverImg;saveImage(book.id,selectedCoverImg);}
+  closeModal('modal-book'); renderHome(); toast(`"${title}" ajouté !`);
+}
+
+// ─── ADD CHAPTER ─────────────────────────────────────────
+function openAddChapter() {
+  document.getElementById('input-chapter').value='';
+  openModal('modal-chapter');
+  setTimeout(()=>document.getElementById('input-chapter').focus(),100);
+}
+function saveChapter() {
+  const name=document.getElementById('input-chapter').value.trim();
+  if(!name){toast('Entrez un nom de chapitre.','error');return;}
+  const book=db.books.find(b=>b.id===currentBookId);
+  book.chapters.push({id:uid(),name,words:[]}); save();
+  closeModal('modal-chapter'); renderBook(); toast(`Chapitre "${name}" ajouté !`);
+}
+
+// ─── EDIT BOOK ────────────────────────────────────────────
+let editingChapterId=null, editSelectedEmoji='';
+
+function openEditBook() {
+  const book=db.books.find(b=>b.id===currentBookId);
+  document.getElementById('edit-book-title').value=book.title;
+  document.getElementById('edit-book-author').value=book.author||'';
+  editSelectedCoverImg=book.coverImg||'';
+  const ep=document.getElementById('edit-cover-preview');
+  const epl=document.getElementById('edit-cover-placeholder');
+  const ecb=document.getElementById('edit-cover-clear-btn');
+  if(editSelectedCoverImg){ep.src=editSelectedCoverImg;ep.style.display='block';epl.style.display='none';ecb.style.display='inline-flex';}
+  else{ep.src='';ep.style.display='none';epl.style.display='flex';ecb.style.display='none';}
+
+  openModal('modal-edit-book');
+  setTimeout(()=>document.getElementById('edit-book-title').focus(),100);
+}
+function saveEditBook() {
+  const title=document.getElementById('edit-book-title').value.trim();
+  if(!title){toast('Le titre est requis.','error');return;}
+  const book=db.books.find(b=>b.id===currentBookId);
+  book.title=title; book.author=document.getElementById('edit-book-author').value.trim();
+  save();
+  if(editSelectedCoverImg){book.coverImg=editSelectedCoverImg;saveImage(book.id,editSelectedCoverImg);}
+  else{book.coverImg='';deleteImage(book.id);}
+  closeModal('modal-edit-book'); renderBook(); setBreadcrumb([{label:book.title}]); toast('Trésor mis à jour !');
+}
+
+// ─── EDIT CHAPTER ─────────────────────────────────────────
+function openEditChapter(chapterId) {
+  editingChapterId=chapterId;
+  const book=db.books.find(b=>b.id===currentBookId);
+  const chapter=book.chapters.find(c=>c.id===chapterId);
+  document.getElementById('edit-chapter-name').value=chapter.name;
+  openModal('modal-edit-chapter');
+  setTimeout(()=>document.getElementById('edit-chapter-name').focus(),100);
+}
+function saveEditChapter() {
+  const name=document.getElementById('edit-chapter-name').value.trim();
+  if(!name){toast('Le nom est requis.','error');return;}
+  const book=db.books.find(b=>b.id===currentBookId);
+  const chapter=book.chapters.find(c=>c.id===editingChapterId);
+  chapter.name=name; save(); closeModal('modal-edit-chapter');
+  const nameEl=document.querySelector(`#ch-${editingChapterId} .chapter-name`);
+  if(nameEl) nameEl.textContent=name;
+  toast('Chapitre mis à jour !');
+}
+
+// ─── DELETE ───────────────────────────────────────────────
+let pendingDelete=null;
+
+function confirmDelete(type,id) {
+  pendingDelete={type,id};
+  const book=db.books.find(b=>b.id===(type==='book'?id:currentBookId));
+  let msg='';
+  if(type==='book') msg=`Supprimer le trésor "${book.title}" et tout son vocabulaire ?`;
+  if(type==='chapter'){const ch=book.chapters.find(c=>c.id===id);msg=`Supprimer le chapitre "${ch.name}" et ses ${ch.words.length} mots ?`;}
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-btn').onclick=executePendingDelete;
+  openModal('modal-confirm');
+}
+function executePendingDelete() {
+  if(!pendingDelete) return;
+  const{type,id}=pendingDelete;
+  if(type==='book'){deleteImage(id);db.books=db.books.filter(b=>b.id!==id);save();closeModal('modal-confirm');goHome();toast('Trésor supprimé.');}
+  else if(type==='chapter'){const book=db.books.find(b=>b.id===currentBookId);book.chapters=book.chapters.filter(c=>c.id!==id);save();closeModal('modal-confirm');renderBook();toast('Chapitre supprimé.');}
+  pendingDelete=null;
+}
+
+// ─── GLOBAL SEARCH ────────────────────────────────────────
+function globalSearch(q) {
+  const container=document.getElementById('search-results');
+  if(!q.trim()){container.classList.remove('open');return;}
+  const results=[];
+  db.books.forEach(book=>{
+    book.chapters.forEach(ch=>{
+      ch.words.filter(w=>w.word.toLowerCase().includes(q.toLowerCase())).forEach(w=>{
+        results.push({bookId:book.id,bookTitle:book.title,chapterName:ch.name,word:w.word,definition:w.definition});
+      });
+    });
+  });
+  if(!results.length){container.innerHTML=`<div style="padding:16px;color:var(--text2);font-size:0.85rem;text-align:center">Aucun résultat</div>`;}
+  else{container.innerHTML=results.slice(0,12).map(r=>`<div class="search-result-item" onclick="openBook('${r.bookId}');closeSearch()"><div class="sr-word">${esc(r.word)}</div><div class="sr-context">${esc(r.bookTitle)} · ${esc(r.chapterName)}</div><div style="font-size:0.75rem;color:var(--text2);margin-top:3px">${esc(r.definition.slice(0,80))}…</div></div>`).join('');}
+  container.classList.add('open');
+}
+function showSearchResults(){const q=document.getElementById('global-search').value;if(q.trim())globalSearch(q);}
+function closeSearch(){document.getElementById('search-results').classList.remove('open');document.getElementById('global-search').value='';}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrapper'))document.getElementById('search-results').classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));closeSearch();}});
+
+// ─── EXPORT ───────────────────────────────────────────────
+function exportBook() {
+  const book=db.books.find(b=>b.id===currentBookId);
+  let text=`📚 ${book.title}\n`; if(book.author) text+=`✍ ${book.author}\n`; text+='\n';
+  book.chapters.forEach(ch=>{text+=`\n── ${ch.name} ──\n`;ch.words.forEach(w=>{text+=`  ${w.word}\n    ${w.definition}\n\n`;});});
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`dictionnaire-${book.title.replace(/\s+/g,'_')}.txt`;a.click();
+  toast('Export téléchargé !');
+}
+
+// ─── UTILS ────────────────────────────────────────────────
+function esc(str=''){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ─── PÉTALES SAKURA ───────────────────────────────────────
+(function() {
+  function petalCanvas(id, count, isFixed) {
+    const canvas=document.getElementById(id); if(!canvas) return;
+    const ctx=canvas.getContext('2d');
+    function resize(){canvas.width=isFixed?window.innerWidth:canvas.parentElement.offsetWidth;canvas.height=isFixed?window.innerHeight:canvas.parentElement.offsetHeight;}
+    resize(); window.addEventListener('resize',resize);
+    const petals=Array.from({length:count},()=>({
+      x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
+      r:3+Math.random()*8,angle:Math.random()*Math.PI*2,
+      rotSpeed:(Math.random()-.5)*.025,speedX:(Math.random()-.5)*.5,
+      speedY:.5+Math.random()*.9,wobble:Math.random()*Math.PI*2,
+      wobbleSpeed:.015+Math.random()*.02,opacity:.35+Math.random()*.5,
+    }));
+    function draw(p){
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);ctx.globalAlpha=p.opacity;
+      ctx.beginPath();ctx.ellipse(0,-p.r*.5,p.r*.55,p.r,0,0,Math.PI*2);
+      const g=ctx.createRadialGradient(0,-p.r*.3,0,0,0,p.r);
+      g.addColorStop(0,'rgba(255,235,245,1)');g.addColorStop(.5,'rgba(255,182,210,.9)');g.addColorStop(1,'rgba(200,100,150,.4)');
+      ctx.fillStyle=g;ctx.fill();ctx.restore();
+    }
+    (function loop(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      petals.forEach(p=>{
+        p.wobble+=p.wobbleSpeed;p.angle+=p.rotSpeed;
+        p.x+=p.speedX+Math.sin(p.wobble)*.8;p.y+=p.speedY;
+        if(p.y>canvas.height+20){p.y=-20;p.x=Math.random()*canvas.width;}
+        if(p.x<-20)p.x=canvas.width+20;if(p.x>canvas.width+20)p.x=-20;
+        draw(p);
+      });
+      requestAnimationFrame(loop);
+    })();
+  }
+  petalCanvas('sakura-canvas', 16, false);
+  petalCanvas('bg-sakura-canvas', 40, true);
+})();
+
+// ─── SERVICE WORKER (PWA) ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+openIDB().then(async () => {
+  for (const book of db.books) {
+    const img = await getImage(book.id);
+    if (img) book.coverImg = img;
+  }
+  await loadSavedBg();
+  updateSyncStatus();
+  updateApiKeyStatus();
+  renderHome();
+  // Pull depuis Gist en arrière-plan si configuré
+  if (ghToken && ghGistId) {
+    pullFromGist(true).then(() => renderHome());
+  }
+}).catch(() => { renderHome(); updateApiKeyStatus(); updateSyncStatus(); });
+</script></script>
+</body>
+</html>
